@@ -51,8 +51,8 @@ namespace LeapSlideShow
                 return;
             isLeapConnected = false;
 
-            //MouseCursor.MouseUp();
-            //showWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerAutoArrow;
+            showWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerAutoArrow;
+            MouseCursor.MouseUp();
 
             controller.RemoveListener(listener);
             controller.Dispose();

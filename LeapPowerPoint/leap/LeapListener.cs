@@ -14,6 +14,13 @@ namespace LeapSlideShow
             get { return this._showWindow; }
         }
 
+        private bool _isActive;
+        public bool IsActive 
+        {
+            set { this._isActive = value; }
+            get { return this._isActive; }
+        }
+
 
         public override void OnInit(Controller cntrlr)
         {
@@ -33,11 +40,13 @@ namespace LeapSlideShow
 
         public override void OnDisconnect(Controller cntrlr)
         {
+            ShowWindow = null;
             //Console.WriteLine("Disconnected");
         }
 
         public override void OnExit(Controller cntrlr)
         {
+            ShowWindow = null;
             //Console.WriteLine("Exited");
         }
 
@@ -55,6 +64,17 @@ namespace LeapSlideShow
 
         public override void OnFrame(Controller cntrlr)
         {
+            try
+            {
+                if (ShowWindow == null || ShowWindow.Active == Microsoft.Office.Core.MsoTriState.msoFalse)
+                    return;
+
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
             // Get the current frame.
             Frame currentFrame = cntrlr.Frame();
 
@@ -88,52 +108,52 @@ namespace LeapSlideShow
             {
                 if (!currentFrame.Hands.IsEmpty)
                 {
-                ////    //////////////////////////////////////////////////////////////////////////
-                ////    //  주먹으로 드로우 할라 그랬는데 성능이 턱없이 부족함
-                ////    //      주먹을 1로 인식하는 경우가 너무 많음
-                ////    ////// 주먹이면
-                ////    if (currentFrame.Pointables.Count == 0 ||
-                ////        (currentFrame.Pointables.Count == 1 && (currentFrame.Pointables[0].Length < 55 || currentFrame.Pointables[0].Length > 75)))
-                ////    {
-                ////        Hand handCurr = currentFrame.Hands[0];
+                    ////    //////////////////////////////////////////////////////////////////////////
+                    ////    //  주먹으로 드로우 할라 그랬는데 성능이 턱없이 부족함
+                    ////    //      주먹을 1로 인식하는 경우가 너무 많음
+                    ////    ////// 주먹이면
+                    ////    if (currentFrame.Pointables.Count == 0 ||
+                    ////        (currentFrame.Pointables.Count == 1 && (currentFrame.Pointables[0].Length < 55 || currentFrame.Pointables[0].Length > 75)))
+                    ////    {
+                    ////        Hand handCurr = currentFrame.Hands[0];
 
-                ////        // 저장되지 않은 주먹이면 새로 저장
-                ////        if (hand0 == null || hand0.Id != handCurr.Id)
-                ////        {
-                ////            hand0 = handCurr;
-                ////            System.Diagnostics.Debug.WriteLine(hand0.Id);
-                ////        }
-                ////        else
-                ////        {
-                ////            float diff = hand0.StabilizedPalmPosition.x - handCurr.StabilizedPalmPosition.x;
-                ////            //if (diff < 0)
-                ////            //{
-                ////            //    ShowWindow.Left += diff;
-                ////            //    //Microsoft.Office.Interop.PowerPoint.SlideShowWindow newWindow;
-                ////            //    //////ShowWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerPen;
-                ////            //    //////ShowWindow.View.PointerColor.RGB = System.Drawing.Color.Green.ToArgb();
-                ////            //    //////MouseCursor.Draw(700 - (int)diff, (int)handCurr.StabilizedPalmPosition.y);
+                    ////        // 저장되지 않은 주먹이면 새로 저장
+                    ////        if (hand0 == null || hand0.Id != handCurr.Id)
+                    ////        {
+                    ////            hand0 = handCurr;
+                    ////            System.Diagnostics.Debug.WriteLine(hand0.Id);
+                    ////        }
+                    ////        else
+                    ////        {
+                    ////            float diff = hand0.StabilizedPalmPosition.x - handCurr.StabilizedPalmPosition.x;
+                    ////            //if (diff < 0)
+                    ////            //{
+                    ////            //    ShowWindow.Left += diff;
+                    ////            //    //Microsoft.Office.Interop.PowerPoint.SlideShowWindow newWindow;
+                    ////            //    //////ShowWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerPen;
+                    ////            //    //////ShowWindow.View.PointerColor.RGB = System.Drawing.Color.Green.ToArgb();
+                    ////            //    //////MouseCursor.Draw(700 - (int)diff, (int)handCurr.StabilizedPalmPosition.y);
 
-                ////            //} else
-                ////            ShowWindow.Left += diff * (float)-0.03;
-                ////            Microsoft.Office.Interop.PowerPoint.Slide currentSlide = ShowWindow.View.Slide;
-                ////            //Microsoft.Office.Interop.PowerPoint.Slide nextSlide = ShowWindow.Presentation.Slides._Index(currentSlide.SlideIndex + 1);
-                ////            //Microsoft.Office.Interop.PowerPoint.SlideShowWindow newWindow;
-                            
-
-                ////            //ShowWindow.View.GotoSlide(currentSlide.SlideIndex + 1);     // <TODO> 여기서 에러 남 - +1 이 인덱스를 넘을 가능성
+                    ////            //} else
+                    ////            ShowWindow.Left += diff * (float)-0.03;
+                    ////            Microsoft.Office.Interop.PowerPoint.Slide currentSlide = ShowWindow.View.Slide;
+                    ////            //Microsoft.Office.Interop.PowerPoint.Slide nextSlide = ShowWindow.Presentation.Slides._Index(currentSlide.SlideIndex + 1);
+                    ////            //Microsoft.Office.Interop.PowerPoint.SlideShowWindow newWindow;
 
 
-                ////            moved = true;
-                ////        }
-                ////        cont = false;
-                ////    }
+                    ////            //ShowWindow.View.GotoSlide(currentSlide.SlideIndex + 1);     // <TODO> 여기서 에러 남 - +1 이 인덱스를 넘을 가능성
+
+
+                    ////            moved = true;
+                    ////        }
+                    ////        cont = false;
+                    ////    }
                     //////////////////////////////////////////////////////////////////////////
 
-                    
+
                     // Get the first finger in the list of fingers
                     Finger finger = currentFrame.Fingers[0];
-                    
+
                     // Get the closest screen intercepting a ray projecting from the finger
                     Screen screen = cntrlr.LocatedScreens.ClosestScreenHit(finger);
 
@@ -149,7 +169,7 @@ namespace LeapSlideShow
                         {
                             var xScreenIntersect = screen.Intersect(finger, true).x;
                             var yScreenIntersect = screen.Intersect(finger, true).y;
-                            
+
                             if (xScreenIntersect.ToString() != "NaN")
                             {
                                 var x = (int)(xScreenIntersect * screen.WidthPixels);
@@ -162,7 +182,8 @@ namespace LeapSlideShow
                                     {
                                         ShowWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerPen;
                                         MouseCursor.Draw(x, y);
-                                    } else 
+                                    }
+                                    else
                                     {
                                         ShowWindow.View.PointerType = Microsoft.Office.Interop.PowerPoint.PpSlideShowPointerType.ppSlideShowPointerAutoArrow;
                                         MouseCursor.MoveCursor(x, y);
@@ -184,6 +205,7 @@ namespace LeapSlideShow
 
                 previousTime = currentTime;
             }
+
         }
     }
 }
